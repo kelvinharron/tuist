@@ -249,7 +249,7 @@ class InitService {
             if let platform = Platform(rawValue: platformString) {
                 return platform
             } else {
-                throw InitServiceError.invalidValue(argument: "platform", error: "Platform should be either ios, tvos, or macos")
+                throw InitServiceError.invalidValue(argument: "platform", error: "Platform should be either ios, tvos, visionos, watchos or macos")
             }
         } else {
             return .iOS
