@@ -112,8 +112,8 @@ public final class DefaultSettingsProvider: DefaultSettingsProviding {
         let settingsHelper = SettingsHelper()
         let defaultSettings = project.settings.defaultSettings
         let variant = settingsHelper.variant(buildConfiguration)
-        let projectDefaultAll = try BuildSettingsProvider.projectDefault(variant: .all).toSettings()
-        let projectDefaultVariant = try BuildSettingsProvider.projectDefault(variant: variant).toSettings()
+        let projectDefaultAll = BuildSettingsProvider.projectDefault(variant: .all).toSettings()
+        let projectDefaultVariant = BuildSettingsProvider.projectDefault(variant: variant).toSettings()
         let filter = try await createFilter(
             defaultSettings: defaultSettings,
             essentialKeys: DefaultSettingsProvider.essentialProjectSettings
@@ -189,14 +189,14 @@ public final class DefaultSettingsProvider: DefaultSettingsProviding {
         let product = settingsHelper.settingsProviderProduct(target)
         let settingsPlatform = settingsHelper.settingsProviderPlatform(platform)
         let variant = settingsHelper.variant(buildConfiguration)
-        let targetDefaultAll = try BuildSettingsProvider.targetDefault(
+        let targetDefaultAll = BuildSettingsProvider.targetDefault(
             variant: .all,
             platform: settingsPlatform,
             product: product,
             swift: true
         ).toSettings()
         let additionalTargetDefaults = additionalTargetSettings(for: target)
-        let targetDefaultVariant = try BuildSettingsProvider.targetDefault(
+        let targetDefaultVariant = BuildSettingsProvider.targetDefault(
             variant: variant,
             platform: settingsPlatform,
             product: product,
@@ -284,6 +284,10 @@ public final class DefaultSettingsProvider: DefaultSettingsProviding {
         } else if target.product == .macro {
             return [
                 "SKIP_INSTALL": "YES",
+                "CODE_SIGN_IDENTITY": "",
+                "PROVISIONING_PROFILE": "",
+                "CODE_SIGNING_REQUIRED": "NO",
+                "CODE_SIGNING_ALLOWED": "NO",
             ]
         } else {
             return [:]

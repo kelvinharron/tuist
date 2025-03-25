@@ -1101,6 +1101,48 @@ final class DefaultSettingsProvider_MacosTests: TuistUnitTestCase {
         "CODE_SIGN_IDENTITY": "-",
     ]
 
+    private let macroTargetEssentialXcode15DebugSettings: [String: SettingValue] = [
+        "SKIP_INSTALL": "YES",
+        "SWIFT_VERSION": "5.0",
+        "SWIFT_OPTIMIZATION_LEVEL": "-Onone",
+        "SWIFT_ACTIVE_COMPILATION_CONDITIONS": ["$(inherited)", "DEBUG"],
+        "CODE_SIGN_IDENTITY": "-",
+        "SDKROOT": "macosx",
+    ]
+
+    private let macroTargetEssentialXcode15ReleaseSettings: [String: SettingValue] = [
+        "CODE_SIGN_IDENTITY": "-",
+        "SWIFT_OPTIMIZATION_LEVEL": "-Owholemodule",
+        "SDKROOT": "macosx",
+        "SKIP_INSTALL": "YES",
+        "SWIFT_VERSION": "5.0",
+    ]
+
+    private let macroTargetRecommendedXcode15DebugSettings: [String: SettingValue] = [
+        "SWIFT_OPTIMIZATION_LEVEL": "-Onone",
+        "CODE_SIGNING_ALLOWED": "NO",
+        "SDKROOT": "macosx",
+        "SWIFT_COMPILATION_MODE": "singlefile",
+        "CODE_SIGN_IDENTITY": "-",
+        "SKIP_INSTALL": "YES",
+        "SWIFT_VERSION": "5.0",
+        "SWIFT_ACTIVE_COMPILATION_CONDITIONS": ["$(inherited)", "DEBUG"],
+        "PROVISIONING_PROFILE": "",
+        "CODE_SIGNING_REQUIRED": "NO",
+    ]
+
+    private let macroTargetRecommendedXcode15ReleaseSettings: [String: SettingValue] = [
+        "SWIFT_OPTIMIZATION_LEVEL": "-Owholemodule",
+        "CODE_SIGNING_ALLOWED": "NO",
+        "SDKROOT": "macosx",
+        "SWIFT_COMPILATION_MODE": "wholemodule",
+        "CODE_SIGN_IDENTITY": "-",
+        "SKIP_INSTALL": "YES",
+        "SWIFT_VERSION": "5.0",
+        "PROVISIONING_PROFILE": "",
+        "CODE_SIGNING_REQUIRED": "NO",
+    ]
+
     override func setUp() {
         super.setUp()
         subject = DefaultSettingsProvider(
@@ -1167,6 +1209,134 @@ final class DefaultSettingsProvider_MacosTests: TuistUnitTestCase {
 
         // Then
         XCTAssertEqual(got, macroTargetEssentialReleaseSettings)
+    }
+
+    func testTargetSettings_whenEssentialDebug_Macro_Xcode15() async throws {
+        // Given
+        let buildConfiguration: BuildConfiguration = .debug
+        let settings = Settings(
+            base: [:],
+            configurations: [buildConfiguration: nil],
+            defaultSettings: .essential
+        )
+        let project = Project.test()
+        let target = Target.test(
+            destinations: [.mac],
+            product: .macro,
+            settings: settings
+        )
+        let graph = Graph.test(path: project.path)
+
+        given(xcodeController)
+            .selectedVersion()
+            .willReturn(Version(15, 0, 0))
+
+        // When
+        let got = try await subject.targetSettings(
+            target: target,
+            project: project,
+            buildConfiguration: buildConfiguration,
+            graphTraverser: GraphTraverser(graph: graph)
+        )
+
+        // Then
+        XCTAssertEqual(got, macroTargetEssentialXcode15DebugSettings)
+    }
+
+    func testTargetSettings_whenEssentialRelease_Macro_Xcode15() async throws {
+        // Given
+        let buildConfiguration: BuildConfiguration = .release
+        let settings = Settings(
+            base: [:],
+            configurations: [buildConfiguration: nil],
+            defaultSettings: .essential
+        )
+        let project = Project.test()
+        let target = Target.test(
+            destinations: [.mac],
+            product: .macro,
+            settings: settings
+        )
+        let graph = Graph.test(path: project.path)
+
+        given(xcodeController)
+            .selectedVersion()
+            .willReturn(Version(15, 0, 0))
+
+        // When
+        let got = try await subject.targetSettings(
+            target: target,
+            project: project,
+            buildConfiguration: buildConfiguration,
+            graphTraverser: GraphTraverser(graph: graph)
+        )
+
+        // Then
+        XCTAssertEqual(got, macroTargetEssentialXcode15ReleaseSettings)
+    }
+
+    func testTargetSettings_whenRecommendedDebug_Macro_Xcode15() async throws {
+        // Given
+        let buildConfiguration: BuildConfiguration = .debug
+        let settings = Settings(
+            base: [:],
+            configurations: [buildConfiguration: nil],
+            defaultSettings: .recommended
+        )
+        let project = Project.test()
+        let target = Target.test(
+            destinations: [.mac],
+            product: .macro,
+            settings: settings
+        )
+        let graph = Graph.test(path: project.path)
+
+        given(xcodeController)
+            .selectedVersion()
+            .willReturn(Version(15, 0, 0))
+
+        // When
+        let got = try await subject.targetSettings(
+            target: target,
+            project: project,
+            buildConfiguration: buildConfiguration,
+            graphTraverser: GraphTraverser(graph: graph)
+        )
+
+        // Then
+        XCTAssertEqual(got, macroTargetRecommendedXcode15DebugSettings)
+    }
+
+    func testTargetSettings_whenRecommendedRelease_Macro_Xcode15() async throws {
+        // Given
+        let buildConfiguration: BuildConfiguration = .release
+        let settings = Settings(
+            base: [:],
+            configurations: [buildConfiguration: nil],
+            defaultSettings: .recommended
+        )
+        let project = Project.test()
+        let target = Target.test(
+            destinations: [.mac],
+            product: .macro,
+            settings: settings
+        )
+        let graph = Graph.test(path: project.path)
+
+        given(xcodeController)
+            .selectedVersion()
+            .willReturn(Version(15, 0, 0))
+
+        // When
+        let got = try await subject.targetSettings(
+            target: target,
+            project: project,
+            buildConfiguration: buildConfiguration,
+            graphTraverser: GraphTraverser(graph: graph)
+        )
+
+        // Then
+        XCTAssertEqual(got, macroTargetRecommendedXcode15ReleaseSettings)
     }
 }
 
